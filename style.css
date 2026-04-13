@@ -28,6 +28,8 @@
     font-weight: 900;
     font-family: Helvetica, Arial, sans-serif;
     border-bottom: 2px solid #eee;
+    white-space: pre-wrap; /* NEU: Erlaubt Zeilenumbrüche */
+    line-height: 1.15;     /* NEU: Etwas engerer Zeilenabstand */
 }
 
 /* Zone für GHS und Signalwort */
