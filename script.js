@@ -1,92 +1,117 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TANKWAGEN DRUCK APP</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body class="bg-gray-100 text-gray-900 font-sans min-h-screen">
+const { jsPDF } = window.jspdf;
 
-    <header class="bg-[#064e3b] p-5 shadow-md">
-        <div class="max-w-6xl mx-auto flex justify-between items-center">
-            <h1 class="text-3xl font-black text-white tracking-widest uppercase">TANKWAGEN APP</h1>
-            <a href="https://thionbas.github.io/printerapp" class="text-white border border-white px-4 py-1 rounded hover:bg-white hover:text-[#064e3b] transition">ZURÜCK</a>
-        </div>
-    </header>
+// GHS Picker
+const ghsPicker = document.getElementById('ghsPicker');
+for (let i = 1; i <= 9; i++) {
+    const id = i.toString().padStart(3, '0');
+    const div = document.createElement('div');
+    div.className = "flex justify-center p-1 border rounded cursor-pointer bg-white";
+    div.innerHTML = `<img src="ghs_${id}.png" class="w-6 h-6 object-contain pointer-events-none"><input type="checkbox" value="${id}" class="ghs-check hidden">`;
+    div.onclick = () => {
+        const cb = div.querySelector('input');
+        if (!cb.checked && document.querySelectorAll('.ghs-check:checked').length >= 6) return;
+        cb.checked = !cb.checked;
+        div.classList.toggle('border-[#064e3b]', cb.checked);
+        div.classList.toggle('bg-green-50', cb.checked);
+        updatePreview();
+    };
+    ghsPicker.appendChild(div);
+}
 
-    <main class="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-2 gap-10 mt-6">
-        
-        <section class="bg-white p-8 rounded-lg shadow-xl border border-gray-200 h-fit">
-            <h2 class="text-xl font-bold border-b pb-2 mb-6 uppercase text-gray-700">Konfiguration</h2>
-            
-            <div class="space-y-6">
-                <div class="p-4 bg-gray-50 rounded-md border border-gray-200">
-                    <label class="block text-sm font-bold mb-1 text-gray-600 uppercase">1. Stoffname (Mehrzeilig möglich)</label>
-                    <textarea id="substanceName" rows="2" class="w-full p-3 border-2 rounded-md font-bold mb-3 outline-none focus:border-[#064e3b] resize-none" placeholder="z.B. NATRONLAUGE&#10;50%"></textarea>
-                    
-                    <div class="flex items-center gap-4">
-                        <input type="range" id="substanceSize" min="10" max="250" value="90" class="flex-1 cursor-pointer accent-[#064e3b]">
-                        <span id="substanceSizeDisplay" class="font-mono font-bold w-10 text-[#064e3b]">90</span>
-                    </div>
-                </div>
+function updatePreview() {
+    let sub = document.getElementById('substanceName').value || "STOFFNAME";
+    const sig = document.getElementById('signal').value;
+    const size = document.getElementById('substanceSize').value;
+    
+    // Footer Daten
+    const bet = document.getElementById('betrieb').value || "Betrieb";
+    const abt = document.getElementById('abteilung').value || "Abteilung";
+    const fir = document.getElementById('firma').value || "Firma";
+    const adr = document.getElementById('adresse').value || "Adresse";
 
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-bold mb-1 text-gray-600 uppercase">Signalwort</label>
-                        <select id="signal" class="w-full p-3 border-2 rounded-md font-bold outline-none focus:border-[#064e3b]">
-                            <option value="">KEINES</option>
-                            <option value="GEFAHR">GEFAHR</option>
-                            <option value="ACHTUNG">ACHTUNG</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold mb-1 text-gray-600 uppercase">GHS Symbole (Max. 6)</label>
-                        <div id="ghsPicker" class="grid grid-cols-5 gap-2 bg-white p-1 rounded border"></div>
-                    </div>
-                </div>
+    document.getElementById('substanceSizeDisplay').innerText = size;
 
-                <div class="p-4 bg-gray-50 rounded-md border border-gray-200 grid grid-cols-2 gap-4">
-                    <div class="col-span-2"><label class="block text-xs font-bold text-gray-500 uppercase">Fußzeile Informationen</label></div>
-                    <input type="text" id="betrieb" placeholder="Betrieb" class="p-2 border rounded text-sm font-bold">
-                    <input type="text" id="abteilung" placeholder="Abteilung" class="p-2 border rounded text-sm font-bold">
-                    <input type="text" id="firma" placeholder="Firma" class="p-2 border rounded text-sm font-bold">
-                    <input type="text" id="adresse" placeholder="Adresse" class="p-2 border rounded text-sm font-bold">
-                </div>
-            </div>
+    const subEl = document.getElementById('pSubstance');
+    subEl.innerText = sub.toUpperCase();
+    
+    const previewWidth = document.getElementById('previewCard').offsetWidth;
+    const scale = previewWidth / 297;
+    subEl.style.fontSize = (size * 0.3527 * scale) + "px";
 
-            <button id="pdfBtn" class="w-full bg-[#064e3b] text-white py-4 rounded-md font-black text-2xl hover:bg-green-800 transition-all shadow-md mt-8 tracking-widest uppercase">
-                TANKWAGEN PDF DRUCKEN
-            </button>
-        </section>
+    document.getElementById('pSignal').innerText = sig;
+    document.getElementById('pBetrieb').innerText = bet;
+    document.getElementById('pAbteilung').innerText = abt;
+    document.getElementById('pFirma').innerText = fir;
+    document.getElementById('pAdresse').innerText = adr;
 
-        <section class="flex flex-col items-center">
-            <span class="text-sm font-bold text-gray-400 mb-3 uppercase tracking-widest">A4 Querformat Vorschau</span>
-            <div class="preview-container shadow-2xl">
-                <div id="previewCard" class="label-canvas">
-                    <div id="pSubstance" class="zone-substance">STOFFNAME</div>
-                    
-                    <div class="zone-ghs">
-                        <div id="pGhs" class="ghs-flex"></div>
-                        <div id="pSignal" class="signal-text"></div>
-                    </div>
+    const ghsZone = document.getElementById('pGhs');
+    ghsZone.innerHTML = '';
+    document.querySelectorAll('.ghs-check:checked').forEach(cb => {
+        const img = document.createElement('img');
+        img.src = `ghs_${cb.value}.png`;
+        ghsZone.appendChild(img);
+    });
+}
 
-                    <div class="zone-footer">
-                        <div class="footer-left">
-                            <span id="pBetrieb">Betrieb</span> | <span id="pAbteilung">Abteilung</span>
-                        </div>
-                        <div class="footer-right">
-                            <span id="pFirma">Firma</span><br>
-                            <span id="pAdresse" style="font-size: 0.8em;">Adresse</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
+document.querySelectorAll('input, select, textarea').forEach(el => el.addEventListener('input', updatePreview));
 
-    <script src="script.js"></script>
-</body>
-</html>
+document.getElementById('pdfBtn').onclick = () => {
+    const doc = new jsPDF({ orientation: 'l', unit: 'mm', format: 'a4' });
+    
+    const sub = document.getElementById('substanceName').value.toUpperCase() || "STOFFNAME";
+    const sig = document.getElementById('signal').value;
+    const size = parseInt(document.getElementById('substanceSize').value);
+    
+    const bet = document.getElementById('betrieb').value;
+    const abt = document.getElementById('abteilung').value;
+    const fir = document.getElementById('firma').value;
+    const adr = document.getElementById('adresse').value;
+    
+    const selectedGhs = Array.from(document.querySelectorAll('.ghs-check:checked')).map(cb => cb.value);
+
+    // 1. STOFFNAME
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(size);
+    
+    const splitSub = doc.splitTextToSize(sub, 270); 
+    const lineHeightMm = (size * 0.3527) * 1.15; 
+    const totalHeight = splitSub.length * lineHeightMm;
+    const startY = 70 - (totalHeight / 2) + (lineHeightMm / 2);
+
+    doc.text(splitSub, 148.5, startY, { align: 'center', baseline: 'middle' });
+
+    // 2. GHS & SIGNAL
+    const iconSize = 25;
+    const gap = 5;
+    const totalW = (selectedGhs.length * iconSize) + ((selectedGhs.length - 1) * gap);
+    let startX = 148.5 - (totalW / 2);
+    
+    if(sig) startX -= 20;
+
+    selectedGhs.forEach((id, i) => {
+        doc.addImage(`ghs_${id}.png`, 'PNG', startX + (i * (iconSize + gap)), 147, iconSize, iconSize);
+    });
+
+    if(sig) {
+        doc.setFontSize(30);
+        doc.setFont("helvetica", "bolditalic");
+        doc.text(sig, startX + totalW + 10, 160, { baseline: 'middle' });
+    }
+
+    // 3. FOOTER - GROSS & FETT
+    doc.setFont("helvetica", "bold");
+    
+    // Betrieb & Abteilung (Links)
+    doc.setFontSize(22);
+    doc.text(`${bet} | ${abt}`, 20, 198, { baseline: 'middle' });
+    
+    // Firma & Adresse (Rechts)
+    doc.setFontSize(22);
+    doc.text(fir, 277, 193, { align: 'right', baseline: 'middle' });
+    doc.setFontSize(16); // Adresse einen Hauch kleiner, damit es optisch abgehoben ist
+    doc.text(adr, 277, 203, { align: 'right', baseline: 'middle' });
+
+    doc.save(`Tankwagen_Label.pdf`);
+};
+
+updatePreview();
