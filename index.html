@@ -24,11 +24,12 @@
             
             <div class="space-y-6">
                 <div class="p-4 bg-gray-50 rounded-md border border-gray-200">
-                    <label class="block text-sm font-bold mb-1 text-gray-600 uppercase">1. Stoffname (2/3 der Seite)</label>
-                    <input type="text" id="substanceName" class="w-full p-3 border-2 rounded-md font-bold mb-3 outline-none focus:border-[#064e3b]" placeholder="z.B. NATRONLAUGE">
+                    <label class="block text-sm font-bold mb-1 text-gray-600 uppercase">1. Stoffname (Mehrzeilig möglich)</label>
+                    <textarea id="substanceName" rows="2" class="w-full p-3 border-2 rounded-md font-bold mb-3 outline-none focus:border-[#064e3b] resize-none" placeholder="z.B. NATRONLAUGE&#10;50%"></textarea>
+                    
                     <div class="flex items-center gap-4">
-                        <input type="range" id="substanceSize" min="50" max="250" value="120" class="flex-1 cursor-pointer accent-[#064e3b]">
-                        <span id="substanceSizeDisplay" class="font-mono font-bold w-10 text-[#064e3b]">120</span>
+                        <input type="range" id="substanceSize" min="10" max="250" value="90" class="flex-1 cursor-pointer accent-[#064e3b]">
+                        <span id="substanceSizeDisplay" class="font-mono font-bold w-10 text-[#064e3b]">90</span>
                     </div>
                 </div>
 
