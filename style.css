@@ -28,8 +28,8 @@
     font-weight: 900;
     font-family: Helvetica, Arial, sans-serif;
     border-bottom: 2px solid #eee;
-    white-space: pre-wrap; /* NEU: Erlaubt Zeilenumbrüche */
-    line-height: 1.15;     /* NEU: Etwas engerer Zeilenabstand */
+    white-space: pre-wrap; 
+    line-height: 1.15;     
 }
 
 /* Zone für GHS und Signalwort */
@@ -61,17 +61,19 @@
     text-transform: uppercase;
 }
 
-/* Fußzeile */
+/* Fußzeile - GROSS UND DICK */
 .zone-footer {
     width: 100%;
     height: 14%;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 20px;
+    padding: 0 25px;
     box-sizing: border-box;
     font-family: Helvetica, Arial, sans-serif;
-    font-size: 0.7rem;
+    font-size: 1.4rem;  /* Deutlich größer */
+    font-weight: 900;   /* Komplett Fett */
+    line-height: 1.2;
 }
 
 .footer-right {
