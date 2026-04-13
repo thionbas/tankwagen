@@ -19,6 +19,7 @@ for (let i = 1; i <= 9; i++) {
 }
 
 function updatePreview() {
+    // .value aus der Textarea holen
     let sub = document.getElementById('substanceName').value || "STOFFNAME";
     const sig = document.getElementById('signal').value;
     const size = document.getElementById('substanceSize').value;
@@ -56,7 +57,7 @@ function updatePreview() {
     });
 }
 
-document.querySelectorAll('input, select').forEach(el => el.addEventListener('input', updatePreview));
+document.querySelectorAll('input, select, textarea').forEach(el => el.addEventListener('input', updatePreview));
 
 document.getElementById('pdfBtn').onclick = () => {
     const doc = new jsPDF({ orientation: 'l', unit: 'mm', format: 'a4' });
@@ -75,7 +76,17 @@ document.getElementById('pdfBtn').onclick = () => {
     // 1. STOFFNAME (0 - 140mm Bereich) -> Mitte bei 70mm
     doc.setFont("helvetica", "bold");
     doc.setFontSize(size);
-    doc.text(sub, 148.5, 70, { align: 'center', baseline: 'middle', maxWidth: 270 });
+    
+    // Automatischen Zeilenumbruch (durch Breite) + Manuelle Umbrüche (Enter-Taste) kombinieren
+    const splitSub = doc.splitTextToSize(sub, 270); 
+    
+    // Block-Höhe berechnen, um den Text (egal wie viele Zeilen) exakt bei Y=70 zu zentrieren
+    const lineHeightMm = (size * 0.3527) * 1.15; // 1.15 ist der jsPDF Standard-Zeilenabstand
+    const totalHeight = splitSub.length * lineHeightMm;
+    const startY = 70 - (totalHeight / 2) + (lineHeightMm / 2);
+
+    // Da splitTextToSize schon umbricht, brauchen wir hier kein maxWidth mehr
+    doc.text(splitSub, 148.5, startY, { align: 'center', baseline: 'middle' });
 
     // 2. GHS & SIGNAL (140 - 180mm Bereich) -> Mitte bei 160mm
     const iconSize = 25;
@@ -83,7 +94,6 @@ document.getElementById('pdfBtn').onclick = () => {
     const totalW = (selectedGhs.length * iconSize) + ((selectedGhs.length - 1) * gap);
     let startX = 148.5 - (totalW / 2);
     
-    // Wenn Signalwort da ist, alles etwas nach links schieben
     if(sig) startX -= 20;
 
     selectedGhs.forEach((id, i) => {
@@ -107,7 +117,7 @@ document.getElementById('pdfBtn').onclick = () => {
     doc.setFont("helvetica", "normal");
     doc.text(adr, 277, 203, { align: 'right' });
 
-    doc.save(`Tankwagen_${sub}.pdf`);
+    doc.save(`Tankwagen_Label.pdf`);
 };
 
 updatePreview();
