@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TANKWAGEN DRUCK APP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-100 text-gray-900 font-sans min-h-screen">
+
+    <header class="bg-[#064e3b] p-5 shadow-md">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <h1 class="text-3xl font-black text-white tracking-widest uppercase">TANKWAGEN APP</h1>
+            <a href="https://thionbas.github.io/printerapp" class="text-white border border-white px-4 py-1 rounded hover:bg-white hover:text-[#064e3b] transition">ZURÜCK</a>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-2 gap-10 mt-6">
+        
+        <section class="bg-white p-8 rounded-lg shadow-xl border border-gray-200 h-fit">
+            <h2 class="text-xl font-bold border-b pb-2 mb-6 uppercase text-gray-700">Konfiguration</h2>
+            
+            <div class="space-y-6">
+                <div class="p-4 bg-gray-50 rounded-md border border-gray-200">
+                    <label class="block text-sm font-bold mb-1 text-gray-600 uppercase">1. Stoffname (2/3 der Seite)</label>
+                    <input type="text" id="substanceName" class="w-full p-3 border-2 rounded-md font-bold mb-3 outline-none focus:border-[#064e3b]" placeholder="z.B. NATRONLAUGE">
+                    <div class="flex items-center gap-4">
+                        <input type="range" id="substanceSize" min="50" max="250" value="120" class="flex-1 cursor-pointer accent-[#064e3b]">
+                        <span id="substanceSizeDisplay" class="font-mono font-bold w-10 text-[#064e3b]">120</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-bold mb-1 text-gray-600 uppercase">Signalwort</label>
+                        <select id="signal" class="w-full p-3 border-2 rounded-md font-bold outline-none focus:border-[#064e3b]">
+                            <option value="">KEINES</option>
+                            <option value="GEFAHR">GEFAHR</option>
+                            <option value="ACHTUNG">ACHTUNG</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1 text-gray-600 uppercase">GHS Symbole (Max. 6)</label>
+                        <div id="ghsPicker" class="grid grid-cols-5 gap-2 bg-white p-1 rounded border"></div>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-gray-50 rounded-md border border-gray-200 grid grid-cols-2 gap-4">
+                    <div class="col-span-2"><label class="block text-xs font-bold text-gray-500 uppercase">Fußzeile Informationen</label></div>
+                    <input type="text" id="betrieb" placeholder="Betrieb" class="p-2 border rounded text-sm">
+                    <input type="text" id="abteilung" placeholder="Abteilung" class="p-2 border rounded text-sm">
+                    <input type="text" id="firma" placeholder="Firma" class="p-2 border rounded text-sm">
+                    <input type="text" id="adresse" placeholder="Adresse" class="p-2 border rounded text-sm">
+                </div>
+            </div>
+
+            <button id="pdfBtn" class="w-full bg-[#064e3b] text-white py-4 rounded-md font-black text-2xl hover:bg-green-800 transition-all shadow-md mt-8 tracking-widest uppercase">
+                TANKWAGEN PDF DRUCKEN
+            </button>
+        </section>
+
+        <section class="flex flex-col items-center">
+            <span class="text-sm font-bold text-gray-400 mb-3 uppercase tracking-widest">A4 Querformat Vorschau</span>
+            <div class="preview-container shadow-2xl">
+                <div id="previewCard" class="label-canvas">
+                    <div id="pSubstance" class="zone-substance">STOFFNAME</div>
+                    
+                    <div class="zone-ghs">
+                        <div id="pGhs" class="ghs-flex"></div>
+                        <div id="pSignal" class="signal-text"></div>
+                    </div>
+
+                    <div class="zone-footer">
+                        <div class="footer-left">
+                            <span id="pBetrieb">Betrieb</span> | <span id="pAbteilung">Abteilung</span>
+                        </div>
+                        <div class="footer-right">
+                            <span id="pFirma" class="font-bold">Firma</span><br>
+                            <span id="pAdresse" class="text-[8px]">Adresse</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
